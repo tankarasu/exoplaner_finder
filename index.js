@@ -1,10 +1,18 @@
 // Core module requirements:
 import fs from "node:fs";
+import path from "node:path";
 
 // Third-party requirtements:
 import { parse } from "csv-parse";
 
-const results = [];
+// Initializing
+const habitablePlanets = [];
+const filePath = path
+  .format({
+    dir: path.dirname("./"),
+    base: "kepler_data.csv",
+  })
+  .normalize();
 
 function isHabitablePlanet(planet) {
   return (
@@ -15,7 +23,7 @@ function isHabitablePlanet(planet) {
   );
 }
 
-fs.createReadStream("kepler_data.csv")
+fs.createReadStream(filePath)
   .pipe(
     parse({
       comment: "#",
@@ -24,19 +32,21 @@ fs.createReadStream("kepler_data.csv")
   )
   .on("data", data => {
     if (isHabitablePlanet(data)) {
-      results.push(data);
+      habitablePlanets.push(data);
     }
   })
   .on("error", err => {
     console.log(err);
   })
   .on("end", () => {
-    console.log(results.map((planet)=>{
-        return planet["kepler_name"]
-    }));
     console.log(
-      `there's ${results.length} habitable planet${
-        results.length > 1 ? "s" : ""
+      habitablePlanets.map(planet => {
+        return planet["kepler_name"];
+      })
+    );
+    console.log(
+      `there's ${habitablePlanets.length} habitable planet${
+        habitablePlanets.length > 1 ? "s" : ""
       }  `
     );
   });
