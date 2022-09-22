@@ -12,18 +12,24 @@ const filePath = path
     dir: path.dirname("./"),
     base: "kepler_data.csv",
   })
-  .normalize();
+  .normalize(); // This could have been done in more easily way :)
 
+  /**
+   * this function check if a planet is habitable.
+   * @param {*} planet string representation of the planet name.
+   * @returns  true if habitable otherwise else.
+   */
 function isHabitablePlanet(planet) {
   return (
-    planet["koi_disposition"] === "CONFIRMED" &&
-    planet["koi_insol"] > 0.36 &&
-    planet["koi_insol"] < 1.11 &&
-    planet["koi_prad"] < 1.6
+    planet["koi_disposition"] === "CONFIRMED" && // disposition like earth CONFIRMED
+    planet["koi_insol"] > 0.36 && // Stellar flux
+    planet["koi_insol"] < 1.11 && // Stellar flux
+    planet["koi_prad"] < 1.6 // Radius of the planet 
   );
 }
 
 fs.createReadStream(filePath)
+  // we parse buffer => string and arrange inside object
   .pipe(
     parse({
       comment: "#",
