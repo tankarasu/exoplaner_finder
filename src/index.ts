@@ -1,25 +1,25 @@
 // Core module requirements:
-import fs from "node:fs";
-import path from "node:path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
 // Third-party requirtements:
 import { parse } from "csv-parse";
 
 // Initializing
-const habitablePlanets = [];
-const filePath = path
+const habitablePlanets: Object[] = [];
+const filePath: string = path
   .format({
     dir: path.dirname("./"),
     base: "kepler_data.csv",
   })
   .normalize(); // This could have been done in more easily way :)
 
-  /**
-   * this function check if a planet is habitable.
-   * @param {*} planet string representation of the planet name.
-   * @returns  true if habitable otherwise else.
-   */
-function isHabitablePlanet(planet) {
+/**
+ * this function check if a planet is habitable.
+ * @param {*} planet string representation of the planet name.
+ * @returns  true if habitable otherwise else.
+ */
+function isHabitablePlanet(planet: Planet): boolean {
   return (
     planet["koi_disposition"] === "CONFIRMED" && // disposition like earth CONFIRMED
     planet["koi_insol"] > 0.36 && // Stellar flux
@@ -51,8 +51,7 @@ fs.createReadStream(filePath)
       })
     );
     console.log(
-      `there's ${habitablePlanets.length} habitable planet${
-        habitablePlanets.length > 1 ? "s" : ""
+      `there's ${habitablePlanets.length} habitable planet${habitablePlanets.length > 1 ? "s" : ""
       }  `
     );
   });
