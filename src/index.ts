@@ -4,6 +4,7 @@ import * as path from "node:path";
 
 // Third-party requirtements:
 import { parse } from "csv-parse";
+import { Planet } from "./types";
 
 // Initializing
 const habitablePlanets: Object[] = [];
@@ -19,7 +20,7 @@ const filePath: string = path
  * @param {*} planet string representation of the planet name.
  * @returns  true if habitable otherwise else.
  */
-function isHabitablePlanet(planet: Planet): boolean {
+export function isHabitablePlanet(planet: Planet): boolean {
   return (
     planet["koi_disposition"] === "CONFIRMED" && // disposition like earth CONFIRMED
     planet["koi_insol"] > 0.36 && // Stellar flux
@@ -28,30 +29,34 @@ function isHabitablePlanet(planet: Planet): boolean {
   );
 }
 
-fs.createReadStream(filePath)
-  // we parse buffer => string and arrange inside object
-  .pipe(
-    parse({
-      comment: "#",
-      columns: true,
-    })
-  )
-  .on("data", data => {
-    if (isHabitablePlanet(data)) {
-      habitablePlanets.push(data);
-    }
-  })
-  .on("error", err => {
-    console.log(err);
-  })
-  .on("end", () => {
-    console.log(
-      habitablePlanets.map(planet => {
-        return planet["kepler_name"];
+export function findHabitablePlanet(pathToFile: string): void {
+  fs.createReadStream(pathToFile)
+    // we parse buffer => string and arrange inside object
+    .pipe(
+      parse({
+        comment: "#",
+        columns: true,
       })
-    );
-    console.log(
-      `there's ${habitablePlanets.length} habitable planet${habitablePlanets.length > 1 ? "s" : ""
-      }  `
-    );
-  });
+    )
+    .on("data", data => {
+      if (isHabitablePlanet(data)) {
+        habitablePlanets.push(data);
+      }
+    })
+    .on("error", err => {
+      throw new Error();
+    })
+    .on("end", () => {
+      console.log(
+        habitablePlanets.map(planet => {
+          return planet["kepler_name"];
+        })
+      );
+      console.log(
+        `there's ${habitablePlanets.length} habitable planet${habitablePlanets.length > 1 ? "s" : ""
+        }  `
+      );
+    });
+}
+
+findHabitablePlanet(filePath)
